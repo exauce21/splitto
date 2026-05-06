@@ -12,32 +12,34 @@ import type { Balances, Settlement } from './types';
 export function simplifyDebts(balances: Balances): Settlement[] {
   const settlements: Settlement[] = [];
 
-  // Convert to array of [memberId, balance] pairs
+  // Convertir le dictionnaire de soldes en une liste d'objets {id, balance}
   const entries = Object.entries(balances)
     .map(([id, balance]) => ({ id, balance }))
-    .filter(entry => Math.abs(entry.balance) > 0.01); // Ignore tiny amounts
-
+    .filter(entry => Math.abs(entry.balance) > 0.01);
   if (entries.length === 0) return settlements;
 
-  // Sort by balance (negative first, then positive)
+  // Sorter les membres par solde croissant 
+  // (les débiteurs en premier, les créditeurs en dernier)
   entries.sort((a, b) => a.balance - b.balance);
 
-  let i = 0; // Points to most negative balance
-  let j = entries.length - 1; // Points to most positive balance
+  let i = 0; // Point sur le plus grand débiteur
+  let j = entries.length - 1; // Point sur le plus grand créditeur
 
+  // Tant qu'il y a des débiteurs et des créditeurs   
+  // On fait s'affronter le plus grand débiteur et le plus grand créditeur
   while (i < j) {
     const debtor = entries[i];
     const creditor = entries[j];
 
-    if (debtor.balance >= -0.01) break; // No more debtors
-    if (creditor.balance <= 0.01) break; // No more creditors
+    if (debtor.balance >= -0.01) break;
+    if (creditor.balance <= 0.01) break;
 
     const amount = Math.min(-debtor.balance, creditor.balance);
 
     settlements.push({
       from: debtor.id,
       to: creditor.id,
-      amount: Math.round(amount * 100) / 100 // Round to cents
+      amount: Math.round(amount * 100) / 100 // Arrondir à 2 décimales
     });
 
     debtor.balance += amount;

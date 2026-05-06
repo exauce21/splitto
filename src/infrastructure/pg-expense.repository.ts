@@ -15,8 +15,8 @@ export class PgExpenseRepository implements ExpenseRepository {
   // save methode pour enregistrer une dépense dans la base de données
   async save(expense: Expense): Promise<void> {
     await this.pool.query(
-      `INSERT INTO expenses (id, group_id, description, amount, currency, paid_by, paid_at, split_mode, split_data, category)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
+      `INSERT INTO expenses (id, group_id, description, amount, currency, paid_by, paid_at, split_mode, split_data, category, created_at)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`,
       [
         expense.id,
         expense.groupId,
@@ -27,7 +27,8 @@ export class PgExpenseRepository implements ExpenseRepository {
         expense.paidAt,
         expense.split.mode,
         expense.split,
-        expense.category
+        expense.category,
+        expense.createdAt,
       ]
     );
   }
@@ -55,6 +56,7 @@ export class PgExpenseRepository implements ExpenseRepository {
     };
   }
 
+  // findByGroupId methode pour trouver toutes les dépenses d'un groupe, triées par date de paiement décroissante
   async findByGroupId(groupId: string): Promise<Expense[]> {
     const result = await this.pool.query(
       'SELECT * FROM expenses WHERE group_id = $1 ORDER BY paid_at DESC',
@@ -75,6 +77,7 @@ export class PgExpenseRepository implements ExpenseRepository {
     }));
   }
 
+  // findInDateRange methode pour trouver les dépenses d'un groupe dans une plage de dates, triées par date de paiement décroissante
   async findInDateRange(
     groupId: string,
     from: Date,
