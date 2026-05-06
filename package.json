@@ -10,6 +10,7 @@
     "test:unit": "vitest run tests/unit",
     "test:unit:watch": "vitest tests/unit",
     "test:integration": "vitest run tests/integration",
+    "test:contract": "npm run test:contract:consumer && npm run test:contract:provider",
     "test:contract:consumer": "vitest run tests/contract/*.consumer.pact.test.ts",
     "test:contract:provider": "vitest run tests/contract/*.provider.pact.test.ts",
     "test:e2e": "playwright test",
