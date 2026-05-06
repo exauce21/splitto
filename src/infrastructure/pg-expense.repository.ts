@@ -55,6 +55,7 @@ export class PgExpenseRepository implements ExpenseRepository {
     };
   }
 
+  // findByGroupId methode pour trouver toutes les dépenses d'un groupe, triées par date de paiement décroissante
   async findByGroupId(groupId: string): Promise<Expense[]> {
     const result = await this.pool.query(
       'SELECT * FROM expenses WHERE group_id = $1 ORDER BY paid_at DESC',
@@ -75,6 +76,7 @@ export class PgExpenseRepository implements ExpenseRepository {
     }));
   }
 
+  // findInDateRange methode pour trouver les dépenses d'un groupe dans une plage de dates, triées par date de paiement décroissante
   async findInDateRange(
     groupId: string,
     from: Date,
