@@ -15,8 +15,8 @@ export class PgExpenseRepository implements ExpenseRepository {
   // save methode pour enregistrer une dépense dans la base de données
   async save(expense: Expense): Promise<void> {
     await this.pool.query(
-      `INSERT INTO expenses (id, group_id, description, amount, currency, paid_by, paid_at, split_mode, split_data, category)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
+      `INSERT INTO expenses (id, group_id, description, amount, currency, paid_by, paid_at, split_mode, split_data, category, created_at)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`,
       [
         expense.id,
         expense.groupId,
@@ -27,7 +27,8 @@ export class PgExpenseRepository implements ExpenseRepository {
         expense.paidAt,
         expense.split.mode,
         expense.split,
-        expense.category
+        expense.category,
+        expense.createdAt,
       ]
     );
   }
