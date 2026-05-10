@@ -17,6 +17,7 @@ describe('Pact Provider - Splitto API', () => {
   let pool: Pool;
   let app: ReturnType<typeof createApp>;
   let server: any;
+  let providerBaseUrl: string;
 
   beforeAll(async () => {
     container = await new PostgreSqlContainer()
@@ -36,7 +37,10 @@ describe('Pact Provider - Splitto API', () => {
     await pool.query(migrationSql);
 
     app = createApp(pool);
-    server = app.listen(3002); // Use a different port for provider test
+    server = app.listen(0);
+    const address = server.address();
+    const port = typeof address === 'object' && address ? address.port : 3002;
+    providerBaseUrl = `http://localhost:${port}`;
   }, 180000);
 
   afterAll(async () => {
@@ -54,7 +58,7 @@ describe('Pact Provider - Splitto API', () => {
   it('validates the expectations of splitto-frontend', async () => {
     const verifier = new Verifier({
       provider: 'splitto-api',
-      providerBaseUrl: 'http://localhost:3002',
+      providerBaseUrl,
       pactUrls: ['pacts/splitto-frontend-splitto-api.json'],
       stateHandlers: {
         'group-1 a 3 membres et 2 dépenses': async () => {
